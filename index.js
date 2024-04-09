@@ -1,6 +1,7 @@
 const express = require('express');
 const sharp = require('sharp');
 const multer = require('multer');
+const fs = require('fs');
 const upload = multer({ dest: 'uploads/' }); // ファイルを一時的に保存するディレクトリ
 
 const app = express();
@@ -29,6 +30,9 @@ app.post('/process-image', upload.single('image'), (req, res) => {
             // 処理された画像をBase64に変換してクライアントに返す
             const base64Image = outputBuffer.toString('base64');
             res.send({ imageData: base64Image });
+
+            // 処理が終わったらファイルを削除
+            fs.unlinkSync(req.file.path);
         })
         .catch((err) => {
             console.error('Error processing image:', err);
